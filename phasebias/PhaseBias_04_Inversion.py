@@ -7,13 +7,14 @@ from scipy.sparse import csc_array
 from scipy.sparse.linalg import lsqr
 import sys
 import math
-from bin.read_orig_ifgs_coh import read_orig_ifgs_coh
-from bin.circular_mean_var import circular_mean_and_variance_over_epochs
+from phasebias.bin.read_orig_ifgs_coh import read_orig_ifgs_coh
+from phasebias.bin.circular_mean_var import circular_mean_and_variance_over_epochs
 import glob
 import configparser
 import warnings
 
-warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
+if hasattr(np, "VisibleDeprecationWarning"):
+    warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 
 ################################################################################
 

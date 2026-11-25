@@ -5,14 +5,15 @@ import re
 from datetime import datetime, timedelta
 import numpy as np
 from osgeo import gdal
-from bin.multilook_w import *  # multilook_w
+from phasebias.bin.multilook_w import *  # multilook_w
 import configparser
 import sys
 import warnings
 import pickle
 import glob
 
-warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
+if hasattr(np, "VisibleDeprecationWarning"):
+    warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 
 #######################################################################
 
@@ -223,6 +224,7 @@ def read_ifgs(
         dirnames.sort(
         )  # This ensures dirnames are processed in alphabetical order
         # Iterate through the files in the current directory
+        filenames = sorted(filenames)
         for filename in filenames:
             # Check if the file ends with "geo.diff_pha.tif"
             # if filename.endswith("geo.diff_unfiltered_pha.tif"): # if unfiltered data are used
@@ -412,6 +414,9 @@ def read_coh(start, end, min_baseline, max_baseline, nlook, landmask, interval,
     n = 1
     # Traverse the root directory and its subdirectories
     for dirpath, dirnames, filenames in os.walk(root_directory):
+        dirnames.sort(
+        )  # This ensures dirnames are processed in alphabetical order
+        filenames = sorted(filenames)
         # Iterate through the files in the current directory
         for filename in filenames:
             # Check if the file ends with "geo.diff_pha.tif"

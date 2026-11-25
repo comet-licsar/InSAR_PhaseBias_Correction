@@ -1,20 +1,44 @@
 # InSAR Phase Bias Correction
 This repository contains scripts for mitigating phase bias in InSAR data. It includes tools for reading data, calculating loop closures, estimating calibration parameters, performing inversion, and correcting interferograms.
 
+## Installation (pip)
+
+The package is installable with pip (Python >= 3.9; GDAL >= 3.4 required,
+pulled in via prebuilt `gdal-wheel` on x86_64/aarch64):
+
+```bash
+pip install insar-phasebias
+# or from this repository:
+pip install .
+```
+
 ## Directory Structure
-- `PhaseBias_01_Read_Data.py`: Reads input wrapped ifgs and coherence data.
-- `PhaseBias_02_Loop_Closures.py`: Calculates loop closures.
-- `PhaseBias_03_calibration_pars.py`: Estimates the calibration parameters $a_n$.
-- `PhaseBias_04_Inversion.py`: Performs inversion for phase bias estimation.
-- `PhaseBias_05_Correction.py`: Corrects interferograms using estimated biases.
-- `bin/`: Contains auxiliary functions used by the scripts.
-- `config.txt`: Configuration file for setting parameters.
+- `phasebias/PhaseBias_01_Read_Data.py`: Reads input wrapped ifgs and coherence data.
+- `phasebias/PhaseBias_02_Loop_Closures.py`: Calculates loop closures.
+- `phasebias/PhaseBias_03_calibration_pars.py`: Estimates the calibration parameters $a_n$.
+- `phasebias/PhaseBias_04_Inversion.py`: Performs inversion for phase bias estimation.
+- `phasebias/PhaseBias_05_Correction.py`: Corrects interferograms using estimated biases.
+- `phasebias/bin/`: Contains auxiliary functions used by the scripts.
+- `config.txt`: Example configuration file for setting parameters.
 
 ## Usage
-1. Clone the repository:
+1. Create a working directory, put a `config.txt` (see the example in this
+   repository) into it, and point `root_path`/`output_path` at your data.
+2. Run the five steps in order:
    ```bash
-   git clone https://github.com/YourUsername/InSAR_PhaseBias_Correction.git
-   cd InSAR_PhaseBias_Correction
+   phasebias-01-read-data
+   phasebias-02-loop-closures
+   phasebias-03-calibration-pars
+   phasebias-04-inversion
+   phasebias-05-correction
+   ```
+   (equivalently: `python -m phasebias.PhaseBias_01_Read_Data`, etc.).
+   Each step accepts `--help` for a detailed description.
+3. Outputs:
+   - `Data/` under `output_path`: pickled ifg/coherence/loop-closure arrays,
+     calibration parameters (`Mean_an_values.pkl`), base-ifg biases
+     (`X_base_ifgs_biases.npy`);
+   - `GEOC/` under `output_path`: corrected wrapped interferograms (GeoTIFF).
 
 ## Test Dataset
 

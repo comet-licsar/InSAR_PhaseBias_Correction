@@ -7,7 +7,8 @@ import configparser
 import os
 import sys
 import warnings
-warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
+if hasattr(np, "VisibleDeprecationWarning"):
+    warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 
 ################################################################################################
 

@@ -5,17 +5,16 @@ from datetime import datetime
 import pickle
 import time
 import os
-from bin.generate_ifgs_from_epochs import generate_ifg_pairs
+from phasebias.bin.generate_ifgs_from_epochs import generate_ifg_pairs
 import configparser
 import glob
-from bin.resample import resample_geotiff
+from phasebias.bin.resample import resample_geotiff
 import sys
 
 # sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-import bin
-from bin.read_orig_ifgs_coh import read_orig_ifgs_coh
+from phasebias.bin.read_orig_ifgs_coh import read_orig_ifgs_coh
 
-from bin.ifg_cc_totif import ifg_cc_2tif
+from phasebias.bin.ifg_cc_totif import ifg_cc_2tif
 
 ###############################################################################
 
@@ -426,6 +425,21 @@ os.makedirs(
 )  # create the GEOC directory if it doesn't exist
 
 template_tif_path = os.path.join(root_directory, metadata_dir, frame + ".geo.hgt.tif")
+
+if not os.path.exists(template_tif_path):
+    # The DEM (hgt) is only needed as a georeferencing template for the
+    # output GeoTIFFs. Fall back to any available metadata raster, e.g.
+    # the landmask.
+    candidates = glob.glob(os.path.join(root_directory, metadata_dir, "*.tif"))
+    if candidates:
+        template_tif_path = sorted(candidates)[0]
+        print(
+            f"WARNING: {frame + '.geo.hgt.tif'} not found; using {os.path.basename(template_tif_path)} "
+            "as the output georeferencing template.")
+    else:
+        raise FileNotFoundError(
+            f"No template GeoTIFF found in {os.path.join(root_directory, metadata_dir)} "
+            f"(expected {frame + '.geo.hgt.tif'} or any *.tif landmask/metadata file).")
 
 if nlook != 1:
     resampled_tif_path = os.path.join(output_wrap_dir, frame + ".geo.hgt.tif")

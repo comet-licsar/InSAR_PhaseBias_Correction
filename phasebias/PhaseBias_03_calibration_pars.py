@@ -11,7 +11,8 @@ import configparser
 import warnings
 
 with warnings.catch_warnings():
-    warnings.simplefilter("ignore", category=np.VisibleDeprecationWarning)
+    if hasattr(np, "VisibleDeprecationWarning"):
+        warnings.simplefilter("ignore", category=np.VisibleDeprecationWarning)
 
 ################################################################################
 
@@ -302,6 +303,10 @@ def plot_an(an_arrays, mean_a_long_baseline, k):
             ax_hist.set_xlim([-10, 10])  # Adjust histogram range as needed
 
         plt.tight_layout()
+        plt.savefig(
+            os.path.join(
+                output_path, "histogram_an.png"), dpi=150, bbox_inches="tight")
+        plt.close(fig)
         plt.show()
     else:
         print("No valid a_n arrays available for plotting.")
@@ -352,6 +357,11 @@ def plot_an(an_arrays, mean_a_long_baseline, k):
 
     # Adjust layout and show the plot
     plt.tight_layout()
+    plt.savefig(
+        os.path.join(output_path, "timeseries_an.png"),
+        dpi=150,
+        bbox_inches="tight")
+    plt.close(fig)
     plt.show()
 
 
@@ -369,7 +379,11 @@ loop_360_6 = np.full_like(
 for i, arr in enumerate(loop_360_6_all):
     if arr is not None:
         (frame_row, frame_col) = np.shape(arr)
-        loop_360_6[i] = np.where((coh_360[i] > coh_thresh), arr, np.nan)
+        if i < len(coh_360) and coh_360[i] is not None:
+            loop_360_6[i] = np.where((coh_360[i] > coh_thresh), arr, np.nan)
+        else:
+            # coherence not available for this loop: keep the raw loop values
+            loop_360_6[i] = arr
 
 ###### forming 360-n (n=12,18,24 etc)
 # mean_a_long_baseline = []
@@ -387,7 +401,10 @@ for k in range(2, 2 + num_a):  # k=2 for a1, k=3 for a2, etc.
     for i, arr in enumerate(loop_360_n_all):
         if arr is not None:
             # Apply coherence threshold filtering
-            loop_360_n[i] = np.where((coh_360[i] > coh_thresh), arr, np.nan)
+            if i < len(coh_360) and coh_360[i] is not None:
+                loop_360_n[i] = np.where((coh_360[i] > coh_thresh), arr, np.nan)
+            else:
+                loop_360_n[i] = arr
 
     # Calculate a_n values
     mean_an_long_baseline, an_arrays = calc_an(loop_360_n, loop_360_6)
