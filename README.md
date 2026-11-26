@@ -7,9 +7,9 @@ The package is installable with pip (Python >= 3.9; GDAL >= 3.4 required,
 pulled in via prebuilt `gdal-wheel` on x86_64/aarch64):
 
 ```bash
-pip install insar-phasebias
-# or from this repository:
-pip install .
+pip install git+https://github.com/comet-licsar/InSAR_PhaseBias_Correction
+# or from cloned repository:
+# pip install .
 ```
 
 ## Directory Structure
